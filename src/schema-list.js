@@ -28,6 +28,11 @@ export const bulletList = {
 // :: NodeSpec
 // A list item (`<li>`) spec.
 export const listItem = {
+  attrs: {
+    depth: {
+      default: 1
+    }
+  },
   parseDOM: [{tag: "li"}],
   toDOM() { return liDOM },
   defining: true
