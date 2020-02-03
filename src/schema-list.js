@@ -170,8 +170,11 @@ function liftToOuterList(state, dispatch, itemType, range) {
   if (end < endOfList) {
     // There are siblings after the lifted items, which must become
     // children of the last item
-    tr.step(new ReplaceAroundStep(end - 1, endOfList, end, endOfList,
-                                  new Slice(Fragment.from(itemType.create(null, range.parent.copy())), 1, 0), 1, true))
+    tr.step(new ReplaceAroundStep(
+      end - 1, endOfList, end, endOfList,
+        new Slice(Fragment.from(itemType.create({
+          depth: range.$to.depth
+        }, range.parent.copy())), 1, 0), 1, true))
     range = new NodeRange(tr.doc.resolve(range.$from.pos), tr.doc.resolve(endOfList), range.depth)
   }
   dispatch(tr.lift(range, liftTarget(range)).scrollIntoView())
@@ -219,8 +222,9 @@ export function sinkListItem(itemType) {
     if (dispatch) {
       let nestedBefore = nodeBefore.lastChild && nodeBefore.lastChild.type == parent.type
       let inner = Fragment.from(nestedBefore ? itemType.create() : null)
-      let slice = new Slice(Fragment.from(itemType.create(null, Fragment.from(parent.type.create(null, inner)))),
-                            nestedBefore ? 3 : 1, 0)
+      let slice = new Slice(Fragment.from(itemType.create({
+        depth: $from.depth
+      }, Fragment.from(parent.type.create(null, inner)))), nestedBefore ? 3 : 1, 0)
       let before = range.start, after = range.end
       dispatch(state.tr.step(new ReplaceAroundStep(before - (nestedBefore ? 3 : 1), after,
                                                    before, after, slice, 1, true))
